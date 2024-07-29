@@ -5,7 +5,7 @@ This repository has the following artifacts:
 
 * [Test Plan](./documents/Test%20Plan.pdf)
 * [Test Scenarios](./documents/Use%20Cases.pdf)
-* [Test Cases](./src/test/resources/features/ascenda.feature)
+* [Test Cases](./src/test/resources/features/ascenda-api-features.feature)
 * [CI/CD Strategy](./documents/CI-CD-Strategy.pdf)
 * API Automation Framework - Framework Code is checked in to this same repository.
 
