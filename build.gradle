@@ -1,0 +1,86 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group 'com.sahajamit'
+version '0.1'
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    cucumberVersion = '7.14.0'
+    springVersion = '5.0.6.RELEASE'
+    log4jVersion ='2.18.0'
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    implementation(
+            "org.apache.logging.log4j:log4j-api:${log4jVersion}",
+            "org.apache.logging.log4j:log4j-core:${log4jVersion}",
+            "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}",
+            "io.cucumber:cucumber-java:${cucumberVersion}",
+            "io.cucumber:cucumber-spring:${cucumberVersion}",
+            "org.springframework:spring-context:${springVersion}",
+            "org.springframework:spring-web:${springVersion}",
+            "org.springframework:spring-test:${springVersion}",
+            'com.squareup.okhttp3:okhttp-sse:4.12.0',
+            'com.squareup.okhttp3:okhttp:4.12.0',
+            'io.rest-assured:rest-assured:5.3.1',
+            'com.fasterxml.jackson.core:jackson-databind:2.15.2',
+            'org.awaitility:awaitility:4.1.0',
+            'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2',
+            'io.qameta.allure:allure-rest-assured:2.24.0',
+            'io.qameta.allure:allure-cucumber7-jvm:2.22.1',
+            'net.datafaker:datafaker:2.1.0',
+            'org.yaml:snakeyaml:2.2',
+            'org.hamcrest:hamcrest:2.2',
+            'com.fasterxml.jackson.core:jackson-core:2.15.2',
+            'org.json:json:20230618',
+            "io.cucumber:cucumber-junit:${cucumberVersion}",
+            "org.junit.vintage:junit-vintage-engine:5.8.2"
+
+    )
+//    testImplementation("io.cucumber:cucumber-junit:${cucumberVersion}")
+//    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.8.2"
+//    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
+//    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+
+    runtimeOnly 'org.aspectj:aspectjweaver:1.9.19'
+    configurations {
+        all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+        all*.exclude group: 'log4j', module: 'log4j'
+    }
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+task cucumberCli() {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = [
+                    '--plugin', 'pretty',
+                    '--plugin', 'io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm',
+                    '--glue', 'com.sahajamit',
+//                    '--tags', '@user-creation', // Add your tag here
+                    'src/test/resources/features',
+                    '--tags', cucumberOptions
+            ]
+        }
+    }
+}
+
+
